@@ -15,10 +15,47 @@ class ApiDocumentController extends Controller {
 	 */
 
 	/** @SWG\Post(
-	 *     path="/api/login",
+	 *     path="/api/auth/register",
+	 *     tags={"Register"},
+	 *     summary="Register Operation",
+	 *     description="Register Operation",
+	 *	   @SWG\Parameter(
+	 *          name="name",
+	 *          description="User Name",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Parameter(
+	 *          name="email",
+	 *          description="User e-mail address",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Parameter(
+	 *          name="password",
+	 *          description="User password",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *      @SWG\Response(
+	 *          response=201,
+	 *          description="Register is Successfully"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=400,
+	 *          description="Validate Error"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Post(
+	 *     path="/api/auth/login",
 	 *     tags={"Login"},
-	 *     summary="Login işlemi",
-	 *     description="Login işlemi",
+	 *     summary="Login Operation",
+	 *     description="Login Operation",
 	 *     @SWG\Parameter(
 	 *          name="email",
 	 *          description="User e-mail address",
@@ -40,8 +77,19 @@ class ApiDocumentController extends Controller {
 	 *              type="object",
 	 *              @SWG\Property(
 	 *                  property="token",
+	 *					description = "User Token",
 	 *                  type="string"
-	 *             )
+	 *              ),
+	 *				@SWG\Property(
+	 *                  property="experies_at",
+	 *                  type="string",
+	 *					description="Token delete date"	
+	 *              ),
+	 *				 @SWG\Property(
+	 *                  property="token_type",
+	 *                  type="string",
+	 *					description="Bearer"	
+	 *             ),
 	 *          )
 	 *     ),
 	 *     @SWG\Response(
@@ -51,11 +99,34 @@ class ApiDocumentController extends Controller {
 	 * )
 	 */
 
+	/** @SWG\Post(
+	 *     path="/api/auth/logout",
+	 *     tags={"Logout"},
+	 *     summary="Logout Operation",
+	 *     description="Logout Operation",
+	 *     @SWG\Parameter(
+	 *          name="token",
+	 *          description="Token",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=200,
+	 *          description="Logout is successful",
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=401,
+	 *          description="Unauthorized"
+	 *     )
+	 * )
+	 */
+
 	/** @SWG\Get(
-	 *     path="/api/profile",
-	 *     tags={"Profil"},
-	 *     summary="Profil bilgisi",
-	 *     description="Profil bilgisi",
+	 *     path="/api/auth/me",
+	 *     tags={"User Info"},
+	 *     summary="User Info",
+	 *     description="User Info",
 	 *     @SWG\Parameter(
 	 *          name="token",
 	 *          description="User token",
@@ -65,18 +136,54 @@ class ApiDocumentController extends Controller {
 	 *     ),
 	 *     @SWG\Response(
 	 *          response=200,
-	 *          description="profile data",
+	 *          description="User Info",
 	 *          @SWG\Schema(
 	 *              type="object",
 	 *              @SWG\Property(
-	 *                  property="user_id",
-	 *                  type="integer"),
-	 *              @SWG\Property(
-	 *                  property="name_surname",
+	 *                  property="name",
 	 *                  type="string"),
 	 *              @SWG\Property(
-	 *                  property="age",
-	 *                  type="integer"
+	 *                  property="email",
+	 *                  type="string"),
+	 *              @SWG\Property(
+	 *                  property="password",
+	 *                  type="string"
+	 *             )
+	 *         )
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=401,
+	 *          description="Unauthorized"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Get(
+	 *     path="/api/auth/users",
+	 *     tags={"Users All"},
+	 *     summary="Users All",
+	 *     description="Users All",
+	 *     @SWG\Parameter(
+	 *          name="token",
+	 *          description="User token",
+	 *          required=true,
+	 *          type="string",
+	 *          in="header"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=200,
+	 *          description="users data",
+	 *          @SWG\Schema(
+	 *              type="object",
+	 *              @SWG\Property(
+	 *                  property="name",
+	 *                  type="string"),
+	 *              @SWG\Property(
+	 *                  property="email",
+	 *                  type="string"),
+	 *              @SWG\Property(
+	 *                  property="password",
+	 *                  type="string"
 	 *             )
 	 *         )
 	 *     ),

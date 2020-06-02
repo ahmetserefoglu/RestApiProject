@@ -63,9 +63,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'sweetalert' => \UxWeb\SweetAlert\ConvertMessagesIntoSweetAlert::class,
         'auth.jwt' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
-        'user' => \App\Http\Middleware\User::class,
-        'admin' => \App\Http\Middleware\Admin::class,
-        'superadmin' => \App\Http\Middleware\SuperAdmin::class,
     ];
 
     /**

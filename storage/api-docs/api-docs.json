@@ -6,13 +6,53 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/login": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Register"
+                ],
+                "summary": "Register Operation",
+                "description": "Register Operation",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "User Name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "User e-mail address",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "User password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Register is Successfully"
+                    },
+                    "400": {
+                        "description": "Validate Error"
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
             "post": {
                 "tags": [
                     "Login"
                 ],
-                "summary": "Login i\u015flemi",
-                "description": "Login i\u015flemi",
+                "summary": "Login Operation",
+                "description": "Login Operation",
                 "parameters": [
                     {
                         "name": "email",
@@ -35,6 +75,15 @@
                         "schema": {
                             "properties": {
                                 "token": {
+                                    "description": "User Token",
+                                    "type": "string"
+                                },
+                                "experies_at": {
+                                    "description": "Token delete date",
+                                    "type": "string"
+                                },
+                                "token_type": {
+                                    "description": "Bearer",
                                     "type": "string"
                                 }
                             },
@@ -47,13 +96,39 @@
                 }
             }
         },
-        "/api/profile": {
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Logout"
+                ],
+                "summary": "Logout Operation",
+                "description": "Logout Operation",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Logout is successful"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/auth/me": {
             "get": {
                 "tags": [
-                    "Profil"
+                    "User Info"
                 ],
-                "summary": "Profil bilgisi",
-                "description": "Profil bilgisi",
+                "summary": "User Info",
+                "description": "User Info",
                 "parameters": [
                     {
                         "name": "token",
@@ -65,17 +140,57 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "profile data",
+                        "description": "User Info",
                         "schema": {
                             "properties": {
-                                "user_id": {
-                                    "type": "integer"
-                                },
-                                "name_surname": {
+                                "name": {
                                     "type": "string"
                                 },
-                                "age": {
-                                    "type": "integer"
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/auth/users": {
+            "get": {
+                "tags": [
+                    "Users All"
+                ],
+                "summary": "Users All",
+                "description": "Users All",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "User token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "users data",
+                        "schema": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
                                 }
                             },
                             "type": "object"

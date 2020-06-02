@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'SiteYonetimPaneli'),
+    'name' => env('APP_NAME', 'RestApiProject'),
 
     /*
     |--------------------------------------------------------------------------
