@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="{{ asset('css/owl.theme.css')}}">
   <link rel="stylesheet" href="{{ asset('css/magnific-popup.css')}}">
   <link rel="stylesheet" href="{{ asset('css/nivo-lightbox.css')}}">
-  <link rel="stylesheet" href="{{ asset('css/main.css')}}">    
+  <link rel="stylesheet" href="{{ asset('css/main.css')}}">
   <link rel="stylesheet" href="{{ asset('css/responsive.css')}}">
   <style type="text/css">
 
@@ -59,7 +59,7 @@
 
   .btn {
     color:  #6610f2 !important;
-    font-size: 10px; 
+    font-size: 10px;
   }
 
   .underline.show {
@@ -76,14 +76,14 @@
 </head>
 <body>
 
-  <header id="home" class="hero-area">    
+  <header id="home" class="hero-area">
     <div class="overlay">
       <span></span>
       <span></span>
     </div>
     <nav class="navbar navbar-expand-md bg-inverse fixed-top scrolling-navbar">
       <div class="container">
-        <a href="index.html" class="navbar-brand"><!--<img src="{{ asset('images/logo.png') }}" alt="">--></a>       
+        <a href="index.html" class="navbar-brand"><!--<img src="{{ asset('images/logo.png') }}" alt="">--></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <i class="lni-menu"></i>
         </button>
@@ -94,10 +94,10 @@
             </li>
             <li class="nav-item">
               <a class="nav-link page-scroll" href="#services">{{trans('adminlte.howwork')}}</a>
-            </li>  
+            </li>
             <li class="nav-item">
               <a class="nav-link page-scroll" href="#contact">{{trans('adminlte.contact')}}</a>
-            </li> 
+            </li>
             @php $locale = session()->get('locale'); @endphp
             <li class="nav-item dropdown">
               <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -205,24 +205,6 @@
                                   </span>
                                   @endif
                                 </div>
-                                <div class="form-group has-feedback {{ $errors->has('site_id') ? 'has-error' : '' }}">
-                                  <select class="form-control select2" style="width: 100%;" name="site_id" >
-                                    <option  value="0">Site Seçiniz</option>
-                                    
-                                    @if(count($sites)>0)
-                                    @foreach ($sites as $site)
-                                    <option  value="{{ $site->id }}">{{$site->site_adi}}</option>
-                                    @endforeach
-                                    @endif
-                                    
-                                  </select>
-                                  <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
-                                  @if ($errors->has('sitename'))
-                                  <span class="help-block">
-                                    <strong>{{ $errors->first('sitename') }}</strong>
-                                  </span>
-                                  @endif
-                                </div>
                                 <div class="form-group has-feedback {{ $errors->has('password') ? 'has-error' : '' }}">
                                   <input type="password" name="password" class="form-control"
                                   placeholder="{{ trans('adminlte.password') }}">
@@ -259,17 +241,17 @@
               </div>
             </div>
           </div>
-        </li>  
+        </li>
       </ul>
     </div>
   </div>
-</nav>  
-<div class="container">      
+</nav>
+<div class="container">
   <div class="row space-80">
     <div class="col-lg-4 col-md-12 col-xs-12 p-0">
       <div class="intro-img">
         <img src="{{ asset('images/business-img.png') }}" alt="">
-      </div>            
+      </div>
     </div>
     <div class="col-lg-8 col-md-12 col-xs-12">
       <div class="contents">
@@ -278,8 +260,8 @@
       </div>
     </div>
 
-  </div> 
-</div>             
+  </div>
+</div>
 </header>
 @include('sweet::alert')
 @if (session('status'))
@@ -366,7 +348,7 @@
        </div>
        <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
         <div class="card-body">
-          ................   
+          ................
         </div>
       </div>
     </div>
@@ -395,13 +377,13 @@
     <!-- Start Row -->
     <div class="row">
       <div class="col-lg-12">
-        <div class="contact-text section-header text-center">  
-          <div>   
+        <div class="contact-text section-header text-center">
+          <div>
             <h2 class="section-title">{{trans('adminlte.getintouch')}}</h2>
             <div class="desc-text">
               <p>{{trans('adminlte.getintouchexp')}}</p>
             </div>
-          </div> 
+          </div>
         </div>
       </div>
 
@@ -416,32 +398,32 @@
             <div class="form-group">
               <input type="text" class="form-control" name="name" id="InputName" placeholder="{{trans('adminlte.name')}}" required data-error="{{trans('adminlte.pleasename')}}">
               <div class="help-block with-errors"></div>
-            </div>                                 
+            </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <input type="text" placeholder="{{trans('adminlte.subject')}}" name="subject" id="InputSubject" class="form-control"  required data-error="{{trans('adminlte.pleasesubject')}}">
               <div class="help-block with-errors"></div>
-            </div> 
+            </div>
           </div>
           <div class="col-md-6">
             <div class="form-group">
               <input type="email" class="form-control" name="email" id="InputEmail" placeholder="{{trans('adminlte.email')}}" required data-error="{{trans('adminlte.pleasemail')}}">
               <div class="help-block with-errors"></div>
-            </div>                                 
+            </div>
           </div>
           <div class="col-md-12">
-            <div class="form-group"> 
+            <div class="form-group">
               <textarea class="form-control" name="message" id="message-text" placeholder="{{trans('adminlte.message')}}" rows="4" data-error="{{trans('adminlte.pleasemessage')}}" required></textarea>
               <div class="help-block with-errors"></div>
             </div>
             <div class="submit-button">
               <button class="btn btn-common" id="submit" type="submit" >{{trans('adminlte.submit')}}</button>
-              <div id="msgSubmit" class="h3 hidden"></div> 
-              <div class="clearfix"></div> 
+              <div id="msgSubmit" class="h3 hidden"></div>
+              <div class="clearfix"></div>
             </div>
           </div>
-        </div>            
+        </div>
       </form>
     </div>
     <div class="col-lg-1">
@@ -508,7 +490,7 @@
               <div class="float-right d-none d-sm-inline-block">
                 <b>Version</b> 1.0.0-beta.1
               </div>
-            </div>              
+            </div>
 
           </div>
         </div>
@@ -521,7 +503,7 @@
 
 <a href="#" class="back-to-top">
   <i class="lni-chevron-up"></i>
-</a> 
+</a>
 
 <div id="preloader">
   <div class="loader" id="loader-1"></div>
@@ -550,12 +532,12 @@
 <script src="{{asset('js/jquery-min.js')}}"></script>
 <script src="{{asset('js/popper.min.js')}}"></script>
 <script src="{{asset('js/bootstrap.min.js')}}"></script>
-<script src="{{asset('js/owl.carousel.js')}}"></script>      
-<script src="{{asset('js/jquery.nav.js')}}"></script>    
-<script src="{{asset('js/scrolling-nav.js')}}"></script>    
-<script src="{{asset('js/jquery.easing.min.js')}}"></script>     
-<script src="{{asset('js/nivo-lightbox.js')}}"></script>     
-<script src="{{asset('js/jquery.magnific-popup.min.js')}}"></script>      
+<script src="{{asset('js/owl.carousel.js')}}"></script>
+<script src="{{asset('js/jquery.nav.js')}}"></script>
+<script src="{{asset('js/scrolling-nav.js')}}"></script>
+<script src="{{asset('js/jquery.easing.min.js')}}"></script>
+<script src="{{asset('js/nivo-lightbox.js')}}"></script>
+<script src="{{asset('js/jquery.magnific-popup.min.js')}}"></script>
 <script src="{{asset('js/main.js')}}"></script>
 </body>
 </html>

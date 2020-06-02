@@ -11,40 +11,41 @@ use Illuminate\Http\Request;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+	return $request->user();
 });
 
+Route::group([
 
-/*Route::group([
+	'prefix' => 'auth',
 
-    'middleware' => 'api',
-    'prefix' => 'auth'
+], function () {
 
-], function ($router) {
+	Route::post('register', 'AuthController@register');
+	Route::post('login', 'AuthController@login');
 
-    Route::post('login', 'AuthController@login');
-    Route::post('logout', 'AuthController@logout');
-    Route::post('refresh', 'AuthController@refresh');
-    Route::post('me', 'AuthController@me');
-    Route::get('faturam', 'FaturaController@faturam');
+	Route::group(['middleware' => 'auth:api'], function () {
 
-});*/
+		Route::post('logout', 'AuthController@logout');
+		Route::get('users', 'AuthController@getAllUser');
+		Route::get('me', 'AuthController@me');
+	});
 
-Route::post('login', 'ApiController@login');
+});
+
+/*Route::post('login', 'ApiController@login');
 Route::post('register', 'ApiController@register');
 
 Route::group(['middleware' => 'auth.jwt'], function () {
-    Route::get('logout', 'ApiController@logout');
- 
-    Route::get('user', 'ApiController@getAuthUser');
- 
-    Route::get('products', 'ProductController@index');
-    Route::get('products/{id}', 'ProductController@show');
-    Route::post('products', 'ProductController@store');
-    Route::put('products/{id}', 'ProductController@update');
-    Route::delete('products/{id}', 'ProductController@destroy');
-});
+Route::get('logout', 'ApiController@logout');
 
+Route::get('user', 'ApiController@getAuthUser');
+
+Route::get('products', 'ProductController@index');
+Route::get('products/{id}', 'ProductController@show');
+Route::post('products', 'ProductController@store');
+Route::put('products/{id}', 'ProductController@update');
+Route::delete('products/{id}', 'ProductController@destroy');
+});*/
