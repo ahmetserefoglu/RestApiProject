@@ -25,6 +25,7 @@ Route::group([
 
 	Route::post('register', 'AuthController@register');
 	Route::post('login', 'AuthController@login');
+	Route::get('email/verify/{id}', 'AuthController@verify')->name('verification.verify');
 
 	Route::group(['middleware' => 'auth:api'], function () {
 

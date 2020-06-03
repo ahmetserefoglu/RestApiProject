@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller {
+
+	use VerifiesEmails;
+
 	//
 	/**
 	 * Create a new AuthController instance.
@@ -46,9 +50,12 @@ class AuthController extends Controller {
 			'name' => $request->name,
 			'email' => $request->email,
 			'password' => bcrypt($request->password),
+			'activation_token' => str_random(60),
 		]);
 
 		$user->save();
+
+		$user->sendApiConfirmAccount();
 
 		$message['success'] = 'Kullanıcı Başarıyla Oluşturuldu';
 
@@ -87,10 +94,21 @@ class AuthController extends Controller {
 		}
 
 		$user = $request->user();
-		$message['token'] = $user->createToken('MyApp')->accessToken;
-		$message['token_type'] = 'Bearer';
-		$message['experies_at'] = Carbon::parse(Carbon::now()->addWeeks(1))->toDateTimeString();
-		$message['success'] = 'Kullanıcı Girişi Başarılı';
+
+		if ($user->email_verified_at !== NULL) {
+
+			$message['token'] = $user->createToken('MyApp')->accessToken;
+			$message['token_type'] = 'Bearer';
+			$message['experies_at'] = Carbon::parse(Carbon::now()->addWeeks(1))->toDateTimeString();
+			$message['success'] = 'Kullanıcı Girişi Başarılı';
+
+		} else {
+
+			$message['error'] = 'Unauthorized';
+			$message['code'] = 401;
+
+			return response()->json(['message' => $message]);
+		}
 
 		return response()->json(['message' => $message, 'code' => 200]);
 	}
@@ -143,12 +161,21 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Response Token
+	 * Verify User
 	 *
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	protected function respondWithToken() {
+	protected function verify(Request $request) {
 
+		$user = User::findOrFail($request['id']);
+
+		$user->email_verified_at = now();
+
+		$user->save();
+
+		$message['success'] = 'Kullanıcı Email Doğrulandı';
+
+		return response()->json(['message' => $message, 'code' => 200]);
 	}
 }

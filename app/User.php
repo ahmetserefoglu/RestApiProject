@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\AccountVerify;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -38,6 +39,10 @@ class User extends Authenticatable {
 
 	public function products() {
 		return $this->hasMany(Product::class);
+	}
+
+	public function sendApiConfirmAccount() {
+		$this->notify(new AccountVerify);
 	}
 
 }
