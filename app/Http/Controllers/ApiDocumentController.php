@@ -83,18 +83,68 @@ class ApiDocumentController extends Controller {
 	 *				@SWG\Property(
 	 *                  property="experies_at",
 	 *                  type="string",
-	 *					description="Token delete date"	
+	 *					description="Token delete date"
 	 *              ),
 	 *				 @SWG\Property(
 	 *                  property="token_type",
 	 *                  type="string",
-	 *					description="Bearer"	
+	 *					description="Bearer"
 	 *             ),
 	 *          )
 	 *     ),
 	 *     @SWG\Response(
 	 *          response=401,
 	 *          description="Unauthorized"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Get(
+	 *     path="/api/auth/email/verify",
+	 *     tags={"Verify"},
+	 *     summary="Verify Operation",
+	 *     description="Verify Operation",
+	 *     @SWG\Parameter(
+	 *          name="id",
+	 *          description="User id",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=200,
+	 *          description="verify is successful",
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=401,
+	 *          description="Unauthorized"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Get(
+	 *     path="/api/auth/email/resend",
+	 *     tags={"Resend"},
+	 *     summary="Resend Operation",
+	 *     description="Resend Operation",
+	 *     @SWG\Parameter(
+	 *          name="email",
+	 *          description="Email",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=200,
+	 *          description="resend is successful",
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=400,
+	 *          description="Email kayıtlı Değil"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=422,
+	 *          description="Daha Önceden Email Doğrulandı "
 	 *     )
 	 * )
 	 */
@@ -193,4 +243,5 @@ class ApiDocumentController extends Controller {
 	 *     )
 	 * )
 	 */
+
 }

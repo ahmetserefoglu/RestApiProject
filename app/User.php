@@ -45,4 +45,8 @@ class User extends Authenticatable {
 		$this->notify(new AccountVerify);
 	}
 
+	public function resendApiConfirmAccount() {
+		$this->notify(new AccountVerifyUser);
+	}
+
 }

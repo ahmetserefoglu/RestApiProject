@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Auth\Events\Verified;
 
 class AuthController extends Controller {
 
@@ -58,7 +58,7 @@ class AuthController extends Controller {
 
 		$user->sendApiConfirmAccount();
 
-		$message['success'] = 'Kullanıcı Başarıyla Oluşturuldu';
+		$message['success'] = 'Kullanıcı Başarıyla Oluşturuldu Sisteme Giriş İçin Mailinize Kontrol Ediniz.';
 
 		return response()->json(['message' => $message, 'code' => 201]);
 	}
@@ -89,14 +89,13 @@ class AuthController extends Controller {
 		if (!Auth::attempt($credentials)) {
 
 			$message['error'] = 'Unauthorized';
-			$message['code'] = 401;
 
-			return response()->json(['message' => $message]);
+			return response()->json(['message' => $message, 'code' => 401]);
 		}
 
 		$user = $request->user();
 
-		if ($user->email_verified_at !== NULL) {
+		if ($user->hasVerifiedEmail()) {
 
 			$message['token'] = $user->createToken('MyApp')->accessToken;
 			$message['token_type'] = 'Bearer';
@@ -105,10 +104,9 @@ class AuthController extends Controller {
 
 		} else {
 
-			$message['error'] = 'Unauthorized';
-			$message['code'] = 401;
+			$message['error'] = 'Mailinize onaylayınız';
 
-			return response()->json(['message' => $message]);
+			return response()->json(['message' => $message, 'code' => 401]);
 		}
 
 		return response()->json(['message' => $message, 'code' => 200]);
@@ -153,16 +151,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Refresh a token.
-	 *
-	 * @return \Illuminate\Http\JsonResponse
-	 */
-	public function refresh() {
-		return $this->respondWithToken(auth()->refresh());
-	}
-
-	/**
-	 * Verify User
+	 * Kullanıcı Onaylama
 	 *
 	 *
 	 * @return \Illuminate\Http\JsonResponse
@@ -178,5 +167,42 @@ class AuthController extends Controller {
 		$message['success'] = 'Kullanıcı Email Doğrulandı';
 
 		return response()->json(['message' => $message, 'code' => 200]);
+	}
+
+	/**
+	 * Yeniden Mail Gönderme
+	 *
+	 *
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	protected function resend(Request $request) {
+
+		$rules = [
+			'email' => 'required|string|email',
+			'email' => 'exists:users',
+		];
+
+		$validator = Validator::make($request->all(), $rules);
+
+		if ($validator->fails()) {
+			return response()->json(['message' => $validator->errors(), 'code' => 400]);
+		}
+
+		$user = User::where('email', $request['email'])->first();
+
+		if ($user->hasVerifiedEmail()) {
+
+			$message['info'] = 'Daha Önceden Email Doğrulandı';
+
+			return response()->json(['message' => $message, 'code' => 422]);
+
+		}
+
+		$user->sendApiConfirmAccount();
+
+		$message['info'] = 'Yeniden Mail Gönderildi';
+
+		return response()->json(['message' => $message, 'code' => 200]);
+
 	}
 }

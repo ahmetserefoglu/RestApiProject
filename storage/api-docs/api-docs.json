@@ -96,6 +96,61 @@
                 }
             }
         },
+        "/api/auth/email/verify": {
+            "get": {
+                "tags": [
+                    "Verify"
+                ],
+                "summary": "Verify Operation",
+                "description": "Verify Operation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "User id",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "verify is successful"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/auth/email/resend": {
+            "get": {
+                "tags": [
+                    "Resend"
+                ],
+                "summary": "Resend Operation",
+                "description": "Resend Operation",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Email",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "resend is successful"
+                    },
+                    "400": {
+                        "description": "Email kay\u0131tl\u0131 De\u011fil"
+                    },
+                    "422": {
+                        "description": "Daha \u00d6nceden Email Do\u011fruland\u0131 "
+                    }
+                }
+            }
+        },
         "/api/auth/logout": {
             "post": {
                 "tags": [

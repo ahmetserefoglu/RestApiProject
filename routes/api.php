@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group([
-
+	'namespace' => 'Auth',
 	'prefix' => 'auth',
 
 ], function () {
@@ -26,6 +26,7 @@ Route::group([
 	Route::post('register', 'AuthController@register');
 	Route::post('login', 'AuthController@login');
 	Route::get('email/verify/{id}', 'AuthController@verify')->name('verification.verify');
+	Route::get('email/resend/{email}', 'AuthController@resend');
 
 	Route::group(['middleware' => 'auth:api'], function () {
 
@@ -33,6 +34,22 @@ Route::group([
 		Route::get('users', 'AuthController@getAllUser')->middleware('verified');
 		Route::get('me', 'AuthController@me');
 	});
+
+});
+
+/*
+Bu Grup tanımında ise password yenileme
+ */
+
+Route::group([
+	'namespace' => 'Auth',
+	'prefix' => 'password',
+
+], function () {
+
+	Route::post('createtoken', 'ResetPasswordController@store');
+	Route::get('find/{token}', 'ResetPasswordController@find');
+	Route::post('resetpassword', 'ResetPasswordController@resetpassword');
 
 });
 
