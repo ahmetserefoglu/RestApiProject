@@ -15,16 +15,15 @@ class CreateUsersTable extends Migration {
 			$table->bigIncrements('id');
 			$table->string('name');
 			$table->string('email')->unique();
-			$table->string('phonenumber')->unique();
-			$table->tinyInteger('verified');
+			$table->string('phonenumber')->unique()->nullable();;
+			$table->boolean('verified')->default(false);
 			$table->boolean('active')->default(false);
-			$table->string('token')->unique();
+			$table->string('token')->unique()->nullable();
 			$table->string('avatar')->default('avatar.png');
-			$table->string('activation_token');
-			$table->string('rolename');
 			$table->timestamp('email_verified_at')->nullable();
 			$table->string('password');
 			$table->rememberToken();
+			$table->softDeletes();
 			$table->timestamps();
 		});
 	}

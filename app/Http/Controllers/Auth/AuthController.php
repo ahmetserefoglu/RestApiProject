@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,16 +14,7 @@ class AuthController extends Controller {
 
 	use VerifiesEmails;
 
-	//
-	/**
-	 * Create a new AuthController instance.
-	 *
-	 * @return void
-	 */
-	/*public function __construct() {
-		$this->middleware('auth:api', ['except' => ['login']]);
-	}*/
-
+	private $field = 'email';
 	/**
 	 * Kullanıcı Kayıt
 	 *
@@ -38,7 +29,8 @@ class AuthController extends Controller {
 		$rules = [
 			'name' => 'required|string',
 			'email' => 'required|string|email|unique:users',
-			'password' => 'required|string',
+			'password' => 'required|string|min:6|confirmed',
+			'phonenumber' => 'required|string|min:10|unique:users',
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -52,13 +44,14 @@ class AuthController extends Controller {
 			'email' => $request->email,
 			'password' => bcrypt($request->password),
 			'activation_token' => str_random(60),
+			'phonenumber' => $request->phonenumber,
 		]);
 
 		$user->save();
 
 		$user->sendApiConfirmAccount();
 
-		$message['success'] = 'Kullanıcı Başarıyla Oluşturuldu Sisteme Giriş İçin Mailinize Kontrol Ediniz.';
+		$message['success'] = 'Kullanıcı Başarıyla Oluşturuldu Sisteme Giriş İçin Mailinizi Kontrol Ediniz.';
 
 		return response()->json(['message' => $message, 'code' => 201]);
 	}
@@ -74,7 +67,6 @@ class AuthController extends Controller {
 	public function login(Request $request) {
 
 		$rules = [
-			'email' => 'required|string|email',
 			'password' => 'required|string',
 		];
 
@@ -84,11 +76,14 @@ class AuthController extends Controller {
 			return response()->json($validator->errors(), 400);
 		}
 
-		$credentials = request(['email', 'password']);
+		$credential = $this->credentials($request);
 
-		if (!Auth::attempt($credentials)) {
+		$credentials['active'] = 1;
+		$credentials['deleted_at'] = null;
 
-			$message['error'] = 'Unauthorized';
+		if (!Auth::attempt($credential)) {
+
+			$message['error'] = 'Email ve Şifrenizi Kontrol Ediniz.';
 
 			return response()->json(['message' => $message, 'code' => 401]);
 		}
@@ -97,10 +92,37 @@ class AuthController extends Controller {
 
 		if ($user->hasVerifiedEmail()) {
 
-			$message['token'] = $user->createToken('MyApp')->accessToken;
-			$message['token_type'] = 'Bearer';
-			$message['experies_at'] = Carbon::parse(Carbon::now()->addWeeks(1))->toDateTimeString();
-			$message['success'] = 'Kullanıcı Girişi Başarılı';
+			$code = rand(1000, 9999);
+			$accountSid = config('app.twilio')['TWILIO_ACCOUNT_SID'];
+			$authToken = config('app.twilio')['TWILIO_AUTH_TOKEN'];
+			try
+			{
+				$client = new Client(['auth' => [$accountSid, $authToken]]);
+				$result = $client->post('https://api.twilio.com/2010-04-01/Accounts/AC037e3b3a9f8743ee90adb2283e7c8402/Messages.json',
+					[
+						'headers' => [
+							'Content-Type' => 'application/x-www-form-urlencoded',
+						],
+						'form_params' => [
+							'Body' => 'CODE: ' . $code, //set message body
+							'To' => '05535345272',
+							'From' => '+13344599247', //we get this number from twilio
+						]]);
+				//$result[0]
+				$mesaj = "Mesaj Başarıyla Gönderildi";
+
+				$message['success'] = 'Mesaj Başarıyla Gönderildi';
+
+				return response()->json(['message' => $message, 'code' => 200]);
+			} catch (Exception $e) {
+				$message['error'] = "Error: " . $e->getMessage();
+
+				return response()->json(['message' => $message, 'code' => 401]);
+			}
+			/*$message['token'] = $user->createToken('MyApp')->accessToken;
+				$message['token_type'] = 'Bearer';
+				$message['experies_at'] = Carbon::parse(Carbon::now()->addWeeks(1))->toDateTimeString();
+			*/
 
 		} else {
 
@@ -113,7 +135,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Get the authenticated User.
+	 * Kullanıcı Bilgileri
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
@@ -125,7 +147,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Log the user out (Invalidate the token).
+	 * Oturumu Kapat
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
@@ -138,7 +160,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * All user
+	 * Kayıtlı Kullanıcılar
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
@@ -151,7 +173,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Kullanıcı Onaylama
+	 * Kullanıcı Email Onaylama
 	 *
 	 *
 	 * @return \Illuminate\Http\JsonResponse
@@ -160,7 +182,15 @@ class AuthController extends Controller {
 
 		$user = User::findOrFail($request['id']);
 
+		if ($user->hasVerifiedEmail()) {
+			$message['error'] = 'Daha Önceden Email Doğrulandı';
+
+			return response()->json(['message' => $message, 'code' => 422]);
+		}
+
 		$user->email_verified_at = now();
+
+		$user->active = true;
 
 		$user->save();
 
@@ -204,5 +234,25 @@ class AuthController extends Controller {
 
 		return response()->json(['message' => $message, 'code' => 200]);
 
+	}
+
+	/**
+	 * Get the login username to be used by the controller.
+	 *
+	 * @return string
+	 */
+	public function username() {
+		return 'email';
+	}
+
+	/**
+	 * Email veya PhoneNumber Girişi
+	 *
+	 */
+	protected function credentials(Request $request) {
+		if (is_numeric($request->get('email'))) {
+			return ['phonenumber' => $request->get('email'), 'password' => $request->get('password')];
+		}
+		return $request->only($this->username(), 'password');
 	}
 }
