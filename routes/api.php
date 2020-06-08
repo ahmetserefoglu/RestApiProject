@@ -25,7 +25,8 @@ Route::group([
 
 	Route::post('register', 'AuthController@register');
 	Route::post('login', 'AuthController@login');
-	Route::get('email/verify/{id}', 'AuthController@verify')->name('verification.verify');
+	Route::get('email/verify/{token}', 'AuthController@verify')->name('verification.verify');
+	Route::get('login/verify/{code}', 'AuthController@loginVerify');
 	Route::get('email/resend/{email}', 'AuthController@resend');
 
 	Route::group(['middleware' => 'auth:api'], function () {
@@ -48,7 +49,7 @@ Route::group([
 ], function () {
 
 	Route::post('createtoken', 'ResetPasswordController@store');
-	Route::get('find/{token}', 'ResetPasswordController@find');
+	Route::get('find/{token?}', 'ResetPasswordController@find');
 	Route::post('resetpassword', 'ResetPasswordController@resetpassword');
 
 });

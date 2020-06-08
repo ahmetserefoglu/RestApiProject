@@ -3,18 +3,29 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\SmsVerification;
 use App\User;
-use GuzzleHttp\Client;
+//use GuzzleHttp\Client;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Mail;
+use Twilio\Rest\Client;
 
 class AuthController extends Controller {
 
 	use VerifiesEmails;
 
 	private $field = 'email';
+
+	protected $code, $smsVerifcation;
+
+	function __construct() {
+		$this->smsVerifcation = new \App\SmsVerification();
+	}
+
 	/**
 	 * Kullanıcı Kayıt
 	 *
@@ -43,7 +54,7 @@ class AuthController extends Controller {
 			'name' => $request->name,
 			'email' => $request->email,
 			'password' => bcrypt($request->password),
-			'activation_token' => str_random(60),
+			'token' => str_random(60),
 			'phonenumber' => $request->phonenumber,
 		]);
 
@@ -93,36 +104,13 @@ class AuthController extends Controller {
 		if ($user->hasVerifiedEmail()) {
 
 			$code = rand(1000, 9999);
-			$accountSid = config('app.twilio')['TWILIO_ACCOUNT_SID'];
-			$authToken = config('app.twilio')['TWILIO_AUTH_TOKEN'];
-			try
-			{
-				$client = new Client(['auth' => [$accountSid, $authToken]]);
-				$result = $client->post('https://api.twilio.com/2010-04-01/Accounts/AC037e3b3a9f8743ee90adb2283e7c8402/Messages.json',
-					[
-						'headers' => [
-							'Content-Type' => 'application/x-www-form-urlencoded',
-						],
-						'form_params' => [
-							'Body' => 'CODE: ' . $code, //set message body
-							'To' => '05535345272',
-							'From' => '+13344599247', //we get this number from twilio
-						]]);
-				//$result[0]
-				$mesaj = "Mesaj Başarıyla Gönderildi";
 
-				$message['success'] = 'Mesaj Başarıyla Gönderildi';
+			$request['code'] = $code;
+			$request['contact_number'] = $user->phonenumber;
 
-				return response()->json(['message' => $message, 'code' => 200]);
-			} catch (Exception $e) {
-				$message['error'] = "Error: " . $e->getMessage();
+			$this->smsVerifcation->store($request);
 
-				return response()->json(['message' => $message, 'code' => 401]);
-			}
-			/*$message['token'] = $user->createToken('MyApp')->accessToken;
-				$message['token_type'] = 'Bearer';
-				$message['experies_at'] = Carbon::parse(Carbon::now()->addWeeks(1))->toDateTimeString();
-			*/
+			return $this->twilloApi($request); // send and return its response
 
 		} else {
 
@@ -154,6 +142,11 @@ class AuthController extends Controller {
 	public function logout(Request $request) {
 
 		$request->user()->token()->revoke();
+
+		$smsverification = $this->smsVerifcation::where('contact_number', $request->user()->phonenumber)->first();
+		$smsverification->status = false;
+		$smsverification->save();
+
 		$message['success'] = 'Sistemden Çıkış Yapıldı';
 
 		return response()->json(['message' => $message, 'code' => 200]);
@@ -180,9 +173,10 @@ class AuthController extends Controller {
 	 */
 	protected function verify(Request $request) {
 
-		$user = User::findOrFail($request['id']);
+		$user = User::where('token', $request['token'])->first();
 
 		if ($user->hasVerifiedEmail()) {
+
 			$message['error'] = 'Daha Önceden Email Doğrulandı';
 
 			return response()->json(['message' => $message, 'code' => 422]);
@@ -192,11 +186,50 @@ class AuthController extends Controller {
 
 		$user->active = true;
 
+		$user->token = '';
+
 		$user->save();
+
+		$setDelay = Carbon::parse($user->email_verified_at)->addSeconds(10);
+
+		Mail::queue(new \App\Mail\UserWelcome($user->name, $user->email));
 
 		$message['success'] = 'Kullanıcı Email Doğrulandı';
 
 		return response()->json(['message' => $message, 'code' => 200]);
+	}
+
+	/**
+	 * Kullanıcı Login Phone Code
+	 *
+	 *
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	protected function loginVerify(Request $request) {
+
+		$smsverification = $this->smsVerifcation::where('code', $request['code'])->first();
+
+		if (!$smsverification->status) {
+
+			$user = User::where('phonenumber', $smsverification->contact_number)->first();
+
+			$message['success'] = "Kullanıcı giriş Yaptı";
+			$message['token'] = $user->createToken('MyApp')->accessToken;
+			$message['token_type'] = 'Bearer';
+			$message['experies_at'] = Carbon::parse(Carbon::now()->addWeeks(1))->toDateTimeString();
+
+			$smsverification->status = true;
+
+			$smsverification->save();
+
+			return response()->json(['message' => $message, 'code' => 200]);
+
+		}
+
+		$message['error'] = "Kullanıcı Kod Geçersiz";
+
+		return response()->json(['message' => $message, 'code' => 400]);
+
 	}
 
 	/**
@@ -254,5 +287,39 @@ class AuthController extends Controller {
 			return ['phonenumber' => $request->get('email'), 'password' => $request->get('password')];
 		}
 		return $request->only($this->username(), 'password');
+	}
+
+	/**
+	 *
+	 *
+	 */
+	protected function twilloApi($value) {
+
+		$accountSid = config('app.twilio')['TWILIO_ACCOUNT_SID'];
+		$authToken = config('app.twilio')['TWILIO_AUTH_TOKEN'];
+		try
+		{
+			$client = new Client($accountSid, $authToken);
+			$result = $client->messages->create(
+
+				'+905535345272',
+				array(
+					'from' => '+17868286138',
+					'body' => 'Code:' . $value->code,
+				)
+
+			);
+
+			$mesaj = "Mesaj Başarıyla Gönderildi";
+
+			$message['success'] = 'Mesaj Başarıyla Gönderildi';
+
+			return response()->json(['message' => $message, 'code' => 200]);
+		} catch (Exception $e) {
+			$message['error'] = "Error: " . $e->getMessage();
+
+			return response()->json(['message' => $message, 'code' => 401]);
+		}
+
 	}
 }

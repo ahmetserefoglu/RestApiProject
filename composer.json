@@ -16,6 +16,8 @@
         "laravel/passport": "^7.5",
         "laravel/tinker": "^1.0",
         "maatwebsite/excel": "~2.1.0",
+        "predis/predis": "^1.1",
+        "twilio/sdk": "^6.6",
         "tymon/jwt-auth": "^1.0",
         "uxweb/sweet-alert": "^2.0",
         "willvincent/laravel-rateable": "^1.0",

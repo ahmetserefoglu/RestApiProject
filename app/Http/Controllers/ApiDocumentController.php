@@ -72,6 +72,29 @@ class ApiDocumentController extends Controller {
 	 *     ),
 	 *     @SWG\Response(
 	 *          response=200,
+	 *          description="Code Send",
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=401,
+	 *          description="Unauthorized and Email,Password Control"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Get(
+	 *     path="/api/auth/login/verify",
+	 *     tags={"Login Verify"},
+	 *     summary="Login Verify Operation",
+	 *     description="Login Verify Operation",
+	 *     @SWG\Parameter(
+	 *          name="code",
+	 *          description="Code",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *	   @SWG\Response(
+	 *          response=200,
 	 *          description="login is successful",
 	 *          @SWG\Schema(
 	 *              type="object",
@@ -89,7 +112,7 @@ class ApiDocumentController extends Controller {
 	 *                  property="token_type",
 	 *                  type="string",
 	 *					description="Bearer"
-	 *             ),
+	 *             )
 	 *          )
 	 *     ),
 	 *     @SWG\Response(
@@ -101,9 +124,9 @@ class ApiDocumentController extends Controller {
 
 	/** @SWG\Get(
 	 *     path="/api/auth/email/verify",
-	 *     tags={"Verify"},
-	 *     summary="Verify Operation",
-	 *     description="Verify Operation",
+	 *     tags={"Email Verify"},
+	 *     summary="Email Verify Operation",
+	 *     description="Email Verify Operation",
 	 *     @SWG\Parameter(
 	 *          name="id",
 	 *          description="User id",
@@ -240,6 +263,82 @@ class ApiDocumentController extends Controller {
 	 *     @SWG\Response(
 	 *          response=401,
 	 *          description="Unauthorized"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Post(
+	 *     path="/api/password/createtoken",
+	 *     tags={"Token for Reset Password "},
+	 *     summary="Reset Password Operation",
+	 *     description="Reset Password Operation",
+	 *     @SWG\Parameter(
+	 *          name="email",
+	 *          description="Email",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=200,
+	 *          description="Reset Password  is successful",
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=404,
+	 *          description="Find'not Email"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Get(
+	 *     path="/api/find/find",
+	 *     tags={"User Token Find"},
+	 *     summary="User Token Find",
+	 *     description="User Token Find",
+	 *     @SWG\Parameter(
+	 *          name="token",
+	 *          description="User token",
+	 *          required=true,
+	 *          type="string",
+	 *          in="header"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=200,
+	 *          description="Success",
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=404,
+	 *          description="Invalid Token"
+	 *     )
+	 * )
+	 */
+
+	/** @SWG\Post(
+	 *     path="/api/password/resetpassword",
+	 *     tags={"Password Change Operation "},
+	 *     summary="Password Change Operation",
+	 *     description="Password Change Operation",
+	 *     @SWG\Parameter(
+	 *          name="email",
+	 *          description="email",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Parameter(
+	 *          name="token",
+	 *          description="token",
+	 *          required=true,
+	 *          type="string",
+	 *          in="query"
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=200,
+	 *          description=" Password Change  is successful",
+	 *     ),
+	 *     @SWG\Response(
+	 *          response=404,
+	 *          description="Find'not User"
 	 *     )
 	 * )
 	 */

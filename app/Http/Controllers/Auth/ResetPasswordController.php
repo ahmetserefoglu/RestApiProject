@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Notifications\ResetPasswordNotify;
+use App\Notifications\ResetPasswordSuccess;
 use App\ResetPassword;
 use App\User;
 use Carbon\Carbon;
@@ -12,16 +13,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ResetPasswordController extends Controller {
 	//
-
-	//
-	/**
-	 * Create a new AuthController instance.
-	 *
-	 * @return void
-	 */
-	/*public function __construct() {
-		$this->middleware('auth:api', ['except' => ['login']]);
-	}*/
 
 	/**
 	 * ResetPassword Token Store
@@ -102,7 +93,7 @@ class ResetPasswordController extends Controller {
 
 		}
 
-		$message['success'] = 'Email Şifre Yenileme Linki Gönderildi';
+		$message['success'] = 'Başarılı';
 
 		return response()->json(['resetpassword' => $resetpassword, 'code' => 200]);
 	}
@@ -116,12 +107,13 @@ class ResetPasswordController extends Controller {
 	 * @return \Illuminate\Http\JsonResponse
 	 *
 	 */
-	public function store(Request $request) {
+	public function resetpassword(Request $request) {
 
 		$rules = [
 			'email' => 'required|string|email',
-			'email' => 'required|string',
+			'email' => 'exists:users',
 			'token' => 'required|string',
+			'password' => 'required|string|min:6|confirmed',
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -132,7 +124,6 @@ class ResetPasswordController extends Controller {
 			return response()->json(['message' => $message, 'code' => 400]);
 		}
 
-		
 		$resetpassword = ResetPassword::updateOrCreate(
 			[
 				'email' => $request->email,
@@ -149,23 +140,22 @@ class ResetPasswordController extends Controller {
 
 		$user = User::where('email', $resetpassword->email)->first();
 
-
 		if (!$user) {
 
-			$message['error'] = 'Mail Adresi Bulunamadı';
+			$message['error'] = 'Kullanıcı Bulunamadı';
 
 			return response()->json(['message' => $message, 'code' => 404]);
 
 		}
 
 		$user->password = bcrypt($request->password);
-        $user->save();
+		$user->save();
 
-        $passwordReset->delete();
+		$resetpassword->delete();
 
-        $user->notify(new ResetPasswordSuccess($resetpassword->token));
+		$user->notify(new ResetPasswordSuccess($resetpassword->token));
 
-		$message['success'] = 'Email Şifre Yenileme Linki Gönderildi';
+		$message['success'] = 'Kullanıcı Şifresi Başarıyla Değiştirildi.';
 
 		return response()->json(['message' => $message, 'code' => 201]);
 	}

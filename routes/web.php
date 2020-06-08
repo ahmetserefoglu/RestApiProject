@@ -14,3 +14,26 @@
 Route::get('/', function () {
 	return view('welcome');
 });
+
+Route::get('share-post', function () {
+	/**
+	 * Post Oluşturma vb. diğer işlemler
+	 */
+	for ($i = 0; $i < 10; $i++) {
+		# e-posta göndermek yerine 1 saniye gecikme ekliyoruz.
+		sleep(1);
+	}
+
+	return 'Gönderiniz yayınlandı';
+});
+
+Route::get('share-post-with-queue', function () {
+	/**
+	 * Post Oluşturma vb. diğer işlemler
+	 */
+	for ($i = 0; $i < 10; $i++) {
+		App\Jobs\SendEmailJob::dispatch();
+	}
+
+	return 'Gönderiniz yayınlandı.';
+});

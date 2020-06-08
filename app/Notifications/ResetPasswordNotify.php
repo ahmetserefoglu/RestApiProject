@@ -40,9 +40,9 @@ class ResetPasswordNotify extends Notification implements ShouldQueue {
 		$url = url('/api/password/find/' . $this->token);
 
 		return (new MailMessage)
-			->line('The introduction to the notification.')
-			->action('Notification Action', url($url))
-			->line('Thank you for using our application!');
+			->line('Şifrenizi Yenilemek İçin Butona Tıklayın')
+			->action('Değiştirme Linki', url($url))
+			->line('Uygulamamızı Kullandığınız İçin Teşekkür Ederiz!');
 	}
 
 	/**

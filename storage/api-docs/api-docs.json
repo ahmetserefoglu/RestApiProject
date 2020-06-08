@@ -71,6 +71,32 @@
                 ],
                 "responses": {
                     "200": {
+                        "description": "Code Send"
+                    },
+                    "401": {
+                        "description": "Unauthorized and Email,Password Control"
+                    }
+                }
+            }
+        },
+        "/api/auth/login/verify": {
+            "get": {
+                "tags": [
+                    "Login Verify"
+                ],
+                "summary": "Login Verify Operation",
+                "description": "Login Verify Operation",
+                "parameters": [
+                    {
+                        "name": "code",
+                        "in": "query",
+                        "description": "Code",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
                         "description": "login is successful",
                         "schema": {
                             "properties": {
@@ -99,10 +125,10 @@
         "/api/auth/email/verify": {
             "get": {
                 "tags": [
-                    "Verify"
+                    "Email Verify"
                 ],
-                "summary": "Verify Operation",
-                "description": "Verify Operation",
+                "summary": "Email Verify Operation",
+                "description": "Email Verify Operation",
                 "parameters": [
                     {
                         "name": "id",
@@ -253,6 +279,91 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/api/password/createtoken": {
+            "post": {
+                "tags": [
+                    "Token for Reset Password "
+                ],
+                "summary": "Reset Password Operation",
+                "description": "Reset Password Operation",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Email",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reset Password  is successful"
+                    },
+                    "404": {
+                        "description": "Find'not Email"
+                    }
+                }
+            }
+        },
+        "/api/find/find": {
+            "get": {
+                "tags": [
+                    "User Token Find"
+                ],
+                "summary": "User Token Find",
+                "description": "User Token Find",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "header",
+                        "description": "User token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "404": {
+                        "description": "Invalid Token"
+                    }
+                }
+            }
+        },
+        "/api/password/resetpassword": {
+            "post": {
+                "tags": [
+                    "Password Change Operation "
+                ],
+                "summary": "Password Change Operation",
+                "description": "Password Change Operation",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "email",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": " Password Change  is successful"
+                    },
+                    "404": {
+                        "description": "Find'not User"
                     }
                 }
             }
