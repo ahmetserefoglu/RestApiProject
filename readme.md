@@ -8,7 +8,7 @@
 + $ git clone https://github.com/ahmetserefoglu/RestApiProject.git
 + $ cd www/RestApiProject
 
-## //Laravel 		
+## Laravel 		
 1. $ composer install
 2. $ copy .env.example .env
 3. $ php artisan key:generate
