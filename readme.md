@@ -6,11 +6,11 @@
 + $ git clone https://github.com/ahmetserefoglu/RestApiProject.git
 + $ cd www/RestApiProject
 
-##Laravel Bölümü		
+## //Laravel 		
 1. $ composer install
 2. $ copy .env.example .env
 3. $ php artisan key:generate
-4. $ php artisan migrate
+4. $ php artisan migrate or php artisan migrate:refresh
 5. $ php artisan passport:install
 
 6. $ php artisan serve
