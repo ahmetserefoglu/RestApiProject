@@ -48,7 +48,7 @@ Route::group([
 
 ], function () {
 
-	Route::post('createtoken', 'ResetPasswordController@store');
+	Route::post('sendtoken', 'ResetPasswordController@store');
 	Route::get('find/{token?}', 'ResetPasswordController@find');
 	Route::post('resetpassword', 'ResetPasswordController@resetpassword');
 

@@ -6,6 +6,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
+/*
+ *
+ * Şifre Yenileme İşlemini Başarıyla Gerçekleştirdiğini Bildirmek İçin Kullandığımız Sınıf
+ */
+
 class ResetPasswordSuccess extends Notification {
 	use Queueable;
 

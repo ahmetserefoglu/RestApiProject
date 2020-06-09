@@ -22,12 +22,16 @@ class AuthController extends Controller {
 
 	protected $code, $smsVerifcation;
 
+	/*
+	*
+	*
+	*/
 	function __construct() {
 		$this->smsVerifcation = new \App\SmsVerification();
 	}
 
 	/**
-	 * Kullanıcı Kayıt
+	 * Kullanıcı Kayıt İşlemleri
 	 *
 	 * @param[string] name
 	 * @param[string] email
@@ -47,7 +51,7 @@ class AuthController extends Controller {
 		$validator = Validator::make($request->all(), $rules);
 
 		if ($validator->fails()) {
-			return response()->json($validator->errors(), 400);
+			return response()->json('message' => $validator->errors(), 400);
 		}
 
 		$user = new User([
@@ -68,7 +72,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Kullanıcı Girişi
+	 * Kullanıcı Giriş İşlemleri
 	 *
 	 * @param[string] email
 	 * @param[string] password
@@ -84,7 +88,7 @@ class AuthController extends Controller {
 		$validator = Validator::make($request->all(), $rules);
 
 		if ($validator->fails()) {
-			return response()->json($validator->errors(), 400);
+			return response()->json('message' => $validator->errors(), 400);
 		}
 
 		$credential = $this->credentials($request);
@@ -123,7 +127,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Kullanıcı Bilgileri
+	 * Kullanıcı Bilgileri Getir
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
@@ -135,7 +139,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Oturumu Kapat
+	 * Oturumu Sonlandır
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
@@ -153,7 +157,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Kayıtlı Kullanıcılar
+	 * Kayıtlı Kullanıcıları Getir
 	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
@@ -190,8 +194,12 @@ class AuthController extends Controller {
 
 		$user->save();
 
-		$setDelay = Carbon::parse($user->email_verified_at)->addSeconds(10);
-
+		/*
+			$setDelay = Carbon::parse($user->email_verified_at)->addSeconds(10);
+			Bu kısımda isterseniz Kullanıcıya Hoşgeldinizi Maili İçin Gecikme Verebilirsiniz.
+			Mail::queue(new \App\Mail\UserWelcome($user->name, $user->email))->delay($setDelay);
+		*/
+		
 		Mail::queue(new \App\Mail\UserWelcome($user->name, $user->email));
 
 		$message['success'] = 'Kullanıcı Email Doğrulandı';
@@ -200,7 +208,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Kullanıcı Login Phone Code
+	 * Kullanıcı Girişi İçin Telefona Gelen Kod Kontrolü
 	 *
 	 *
 	 * @return \Illuminate\Http\JsonResponse
@@ -233,7 +241,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Yeniden Mail Gönderme
+	 * Yeniden Mail Gönderme İşlemi
 	 *
 	 *
 	 * @return \Illuminate\Http\JsonResponse
@@ -270,7 +278,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Get the login username to be used by the controller.
+	 * Kullanıcıdan Oturum Açmak İçin İstenilen Kullanıcı Adı
 	 *
 	 * @return string
 	 */
@@ -279,7 +287,7 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 * Email veya PhoneNumber Girişi
+	 * Email veya PhoneNumber Kullanıcı Girişi Ayarlamak İçin
 	 *
 	 */
 	protected function credentials(Request $request) {
@@ -290,19 +298,21 @@ class AuthController extends Controller {
 	}
 
 	/**
-	 *
+	 *	Oturumu Açmak İçin Telefon Numarasına Gönderilen Kod İçin Twilio Api
+	 *	
 	 *
 	 */
 	protected function twilloApi($value) {
 
 		$accountSid = config('app.twilio')['TWILIO_ACCOUNT_SID'];
 		$authToken = config('app.twilio')['TWILIO_AUTH_TOKEN'];
+		$contact_number = $value->contact_number;
 		try
 		{
 			$client = new Client($accountSid, $authToken);
 			$result = $client->messages->create(
 
-				'+905535345272',
+				'$contact_number',
 				array(
 					'from' => '+17868286138',
 					'body' => 'Code:' . $value->code,

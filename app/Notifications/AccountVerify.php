@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 
 /**
- * Account Verify
+ * Bu Kısımda AccountVerify adında bir notification sınıfı oluşturduk
+ * VerifyEmail Sınıfından Miras Aldık ve Overloading Yaparak Kullanıcı Mail Özelleştirmelerini Yaptık
+ *
  */
 class AccountVerify extends AccountVerifyBase {
 

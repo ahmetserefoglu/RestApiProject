@@ -268,7 +268,7 @@ class ApiDocumentController extends Controller {
 	 */
 
 	/** @SWG\Post(
-	 *     path="/api/password/createtoken",
+	 *     path="/api/password/sendtoken",
 	 *     tags={"Token for Reset Password "},
 	 *     summary="Reset Password Operation",
 	 *     description="Reset Password Operation",
@@ -291,7 +291,7 @@ class ApiDocumentController extends Controller {
 	 */
 
 	/** @SWG\Get(
-	 *     path="/api/find/find",
+	 *     path="/api/password/find",
 	 *     tags={"User Token Find"},
 	 *     summary="User Token Find",
 	 *     description="User Token Find",

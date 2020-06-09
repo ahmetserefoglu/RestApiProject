@@ -45,6 +45,11 @@ class User extends Authenticatable {
 		return $this->hasMany(Product::class);
 	}
 
+	/**
+	 *
+	 * Kullanıcı Doğrulama İçin Çalışan Notification
+	 *
+	 */
 	public function sendApiConfirmAccount() {
 		$this->notify(new AccountVerify);
 	}
