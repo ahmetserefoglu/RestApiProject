@@ -10,7 +10,7 @@ class SmsVerification extends Model {
 	protected $fillable = ['contact_number', 'code', 'status'];
 
 	/**
-	 * Kullanıcı Giriş İçin Kod Gönderme
+	 * Kullanıcı Giriş İçin Kod ve Numarayı Kayıt Altında Tutan Metot
 	 *
 	 * @param[array] $request
 	 * @return \Illuminate\Http\JsonResponse

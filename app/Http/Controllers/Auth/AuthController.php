@@ -20,14 +20,14 @@ class AuthController extends Controller {
 
 	private $field = 'email';
 
-	protected $code, $smsVerifcation;
+	protected $code, $smsVerification;
 
 	/*
-	*
-	*
+		*
+		*
 	*/
 	function __construct() {
-		$this->smsVerifcation = new \App\SmsVerification();
+		$this->smsVerification = new \App\SmsVerification();
 	}
 
 	/**
@@ -51,7 +51,7 @@ class AuthController extends Controller {
 		$validator = Validator::make($request->all(), $rules);
 
 		if ($validator->fails()) {
-			return response()->json('message' => $validator->errors(), 400);
+			return response()->json(['message' => $validator->errors(), 'code' => 400]);
 		}
 
 		$user = new User([
@@ -88,13 +88,13 @@ class AuthController extends Controller {
 		$validator = Validator::make($request->all(), $rules);
 
 		if ($validator->fails()) {
-			return response()->json('message' => $validator->errors(), 400);
+			return response()->json(['message' => $validator->errors(), 'code' => 400]);
 		}
 
 		$credential = $this->credentials($request);
 
-		$credentials['active'] = 1;
-		$credentials['deleted_at'] = null;
+		$credential['active'] = 1;
+		$credential['deleted_at'] = null;
 
 		if (!Auth::attempt($credential)) {
 
@@ -105,16 +105,28 @@ class AuthController extends Controller {
 
 		$user = $request->user();
 
+		$code = rand(1000, 9999);
+
+		$request['code'] = $code;
+		$request['contact_number'] = $user->phonenumber;
+
 		if ($user->hasVerifiedEmail()) {
 
-			$code = rand(1000, 9999);
+			$smsverification = $this->smsVerification::where('contact_number', $user->phonenumber)->first();
 
-			$request['code'] = $code;
-			$request['contact_number'] = $user->phonenumber;
+			if ($smsverification) {
 
-			$this->smsVerifcation->store($request);
+				$smsverification->contact_number = $user->phonenumber;
+				$smsverification->code = $code;
+				$smsverification->status = false;
+				$smsverification->save();
 
-			return $this->twilloApi($request); // send and return its response
+			} else {
+
+				$this->smsVerification->store($request);
+			}
+
+			return $this->twilloApi($request);
 
 		} else {
 
@@ -147,9 +159,9 @@ class AuthController extends Controller {
 
 		$request->user()->token()->revoke();
 
-		$smsverification = $this->smsVerifcation::where('contact_number', $request->user()->phonenumber)->first();
-		$smsverification->status = false;
-		$smsverification->save();
+		$smsverification = $this->smsVerification::where('contact_number', $request->user()->phonenumber)->first();
+
+		$smsverification->delete();
 
 		$message['success'] = 'Sistemden Çıkış Yapıldı';
 
@@ -177,7 +189,7 @@ class AuthController extends Controller {
 	 */
 	protected function verify(Request $request) {
 
-		$user = User::where('token', $request['token'])->first();
+		$user = User::where('token', $request['token'])->firstOrFail();
 
 		if ($user->hasVerifiedEmail()) {
 
@@ -190,7 +202,7 @@ class AuthController extends Controller {
 
 		$user->active = true;
 
-		$user->token = '';
+		$user->token = null;
 
 		$user->save();
 
@@ -199,7 +211,7 @@ class AuthController extends Controller {
 			Bu kısımda isterseniz Kullanıcıya Hoşgeldinizi Maili İçin Gecikme Verebilirsiniz.
 			Mail::queue(new \App\Mail\UserWelcome($user->name, $user->email))->delay($setDelay);
 		*/
-		
+
 		Mail::queue(new \App\Mail\UserWelcome($user->name, $user->email));
 
 		$message['success'] = 'Kullanıcı Email Doğrulandı';
@@ -215,7 +227,7 @@ class AuthController extends Controller {
 	 */
 	protected function loginVerify(Request $request) {
 
-		$smsverification = $this->smsVerifcation::where('code', $request['code'])->first();
+		$smsverification = $this->smsVerification::where('code', $request['code'])->first();
 
 		if (!$smsverification->status) {
 
@@ -269,6 +281,13 @@ class AuthController extends Controller {
 
 		}
 
+		/*
+			Yeni Bağlantı Gönderirken Yeniden Token Oluşturyoruz
+		*/
+		$user->token = str_random(45);
+
+		$user->save();
+
 		$user->sendApiConfirmAccount();
 
 		$message['info'] = 'Yeniden Mail Gönderildi';
@@ -299,20 +318,21 @@ class AuthController extends Controller {
 
 	/**
 	 *	Oturumu Açmak İçin Telefon Numarasına Gönderilen Kod İçin Twilio Api
-	 *	
+	 *
 	 *
 	 */
 	protected function twilloApi($value) {
 
 		$accountSid = config('app.twilio')['TWILIO_ACCOUNT_SID'];
 		$authToken = config('app.twilio')['TWILIO_AUTH_TOKEN'];
-		$contact_number = $value->contact_number;
+		$contact_number = '+90' . $value->contact_number;
+
 		try
 		{
 			$client = new Client($accountSid, $authToken);
 			$result = $client->messages->create(
 
-				'$contact_number',
+				$contact_number,
 				array(
 					'from' => '+17868286138',
 					'body' => 'Code:' . $value->code,

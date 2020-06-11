@@ -43,7 +43,7 @@ default:
 @if (! empty($salutation))
 {{ $salutation }}
 @else
-@lang('Regards'),<br>
+@lang('Saygılarımızla'),<br>
 {{ config('app.name') }}
 @endif
 

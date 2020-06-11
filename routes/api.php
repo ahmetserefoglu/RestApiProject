@@ -25,9 +25,9 @@ Route::group([
 
 	Route::post('register', 'AuthController@register');
 	Route::post('login', 'AuthController@login');
-	Route::get('email/verify/{token}', 'AuthController@verify')->name('verification.verify');
-	Route::get('login/verify/{code}', 'AuthController@loginVerify');
-	Route::get('email/resend/{email}', 'AuthController@resend');
+	Route::get('email/verify/{token?}', 'AuthController@verify')->name('verification.verify');
+	Route::get('login/verify/{code?}', 'AuthController@loginVerify');
+	Route::get('email/resend/{email?}', 'AuthController@resend');
 
 	Route::group(['middleware' => 'auth:api'], function () {
 
