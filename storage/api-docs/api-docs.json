@@ -283,7 +283,7 @@
                 }
             }
         },
-        "/api/password/createtoken": {
+        "/api/password/sendtoken": {
             "post": {
                 "tags": [
                     "Token for Reset Password "
@@ -309,7 +309,7 @@
                 }
             }
         },
-        "/api/find/find": {
+        "/api/password/find": {
             "get": {
                 "tags": [
                     "User Token Find"

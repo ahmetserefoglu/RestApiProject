@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 /*
  *
  * Şifre Yenileme Linki Göndermek İçin Kullandığımız Sınıf
- * Burada ShouldQueue sınıfını implement etmemiz bize mail göndermelerde işlemleri kuyruğa alarak işlem yapıyor
+ * Burada ShouldQueue sınıfını implement etmemiz bize mail göndermelerde işlemleri kuyruğa alarak işlem yapıyor olması
  */
 class ResetPasswordNotify extends Notification implements ShouldQueue {
 	use Queueable;
