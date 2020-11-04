@@ -109,8 +109,7 @@ class ResetPasswordController extends Controller {
 	public function resetpassword(Request $request) {
 
 		$rules = [
-			'email' => 'required|string|email',
-			'email' => 'exists:users',
+			'email' => 'required|string|email|exists:users',
 			'token' => 'required|string',
 			'password' => 'required|string|min:6|confirmed',
 		];
