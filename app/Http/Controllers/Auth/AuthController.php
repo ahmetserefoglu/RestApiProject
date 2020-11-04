@@ -261,8 +261,7 @@ class AuthController extends Controller {
 	protected function resend(Request $request) {
 
 		$rules = [
-			'email' => 'required|string|email',
-			'email' => 'exists:users',
+			'email' => 'required|string|email|exists:users'
 		];
 
 		$validator = Validator::make($request->all(), $rules);
