@@ -3,16 +3,11 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-/*
- *
- * Şifre Yenileme Linki Göndermek İçin Kullandığımız Sınıf
- * Burada ShouldQueue sınıfını implement etmemiz bize mail göndermelerde işlemleri kuyruğa alarak işlem yapıyor olması
- */
-class ResetPasswordNotify extends Notification implements ShouldQueue {
+
+class ResetPasswordNotify extends Notification {
 	use Queueable;
 
 	protected $token;
